@@ -4858,6 +4858,11 @@ _require_kernel_config()
 	_has_kernel_config $1 || _notrun "Installed kernel not built with $1"
 }
 
+_require_localhost()
+{
+	ping -q -W 1 -c 1 localhost >& /dev/null || _notrun "localhost not reachable"
+}
+
 init_rc
 
 ################################################################################
