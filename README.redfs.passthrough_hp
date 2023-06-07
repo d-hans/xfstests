@@ -1,0 +1,40 @@
+Here are instructions for testing redfs using the passthrough_hp example
+filesystem provided in the red-libfuse source tree:
+
+git clone git@github.com:DDNStorage/red-libfuse.git
+cd red-libfuse
+meson build
+cd build
+ninja
+cat << EOF | sudo tee /sbin/mount.redfs.passthrough_hp
+#!/bin/bash
+
+ulimit -n 1048576
+
+dev="$1"
+shift
+if [ "$dev" = "${SCRATCH_DEV}" ]; then
+  source="${SCRATCH_SOURCE}"
+else
+  source="${TEST_SOURCE}"
+fi
+exec "$PASSTHROUGH_PATH" -o fsname=$dev,allow_other ${source} "$@" -o subtype=passthrough_hp
+
+EOF
+sudo chmod +x /sbin/mount.redfs.passthrough_hp
+mkdir -p /mnt/test /mnt/scratch /home/test/test /home/test/scratch
+
+Use the following local.config file:
+
+export TEST_DEV=non1
+export TEST_DIR=/mnt/test
+export SCRATCH_DEV=non2
+export SCRATCH_MNT=/mnt/scratch
+export FSTYP=fuse
+export FUSE_SUBTYP=.passthrough
+export MOUNT_OPTIONS=""
+export TEST_FS_MOUNT_OPTS=""
+
+PASSTHROUGH_PATH=/home/dharam/red-libfuse/build/example/passthrough_hp
+SCRATCH_SOURCE=/home/test/scratch
+TEST_SOURCE=/home/test/test
