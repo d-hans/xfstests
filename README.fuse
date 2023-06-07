@@ -9,7 +9,7 @@ ninja
 cat << EOF | sudo tee /sbin/mount.fuse.passthrough_ll
 #!/bin/bash
 ulimit -n 1048576
-exec $(pwd)/example/passthrough_ll -ofsname="\$@"
+exec $(pwd)/example/passthrough_ll -ofsname="\$@" -o subtype=passthrough_ll
 EOF
 sudo chmod +x /sbin/mount.fuse.passthrough_ll
 mkdir -p /mnt/test /mnt/scratch /home/test/test /home/test/scratch
